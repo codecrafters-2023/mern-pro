@@ -45,17 +45,19 @@ function App() {
   if (!alldata) {
     return (
       <>
-        <div className="spinner">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+        <div style={{display:"flex", justifyContent:"center", alignItems:"center",minHeight:"100vh"}}>
+          <div className="spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       </>
     )

@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import { BsCircleFill } from "react-icons/bs";
-import { MdOutlineDeleteOutline } from "react-icons/md";
-import { GrUpdate } from "react-icons/gr";
+
 
 function App() {
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
 
   const [alldata, setAlldata] = useState('')
 
-const URL = 'https://mern-hpk3.onrender.com';
+  const URL = 'https://mern-hpk3.onrender.com';
+  // const URL = 'http://localhost:8000';
 
   useEffect(() => {
     axios.get(`${URL}/get`)
@@ -23,11 +21,11 @@ const URL = 'https://mern-hpk3.onrender.com';
 
   const handleClick = () => {
 
-    if (!name || !email) {
-      alert("Please enter a name and email");
+    if (!title || !description) {
+      alert("Please enter the details");
     }
 
-    axios.post(`${URL}/add`, { name: name, email: email })
+    axios.post(`${URL}/add`, { title, description })
       .then(() => location.reload())
       .catch((error) => console.log(error))
   }
@@ -44,34 +42,88 @@ const URL = 'https://mern-hpk3.onrender.com';
       .catch((error) => console.log(error))
   }
 
+  if (!alldata) {
+    return (
+      <>
+        <div className="spinner">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </>
+    )
+  }
+
 
   return (
     <>
       <div className='main_div'>
         <div className='input_div'>
-          <input type="text" placeholder='Username' onChange={(e) => setName(e.target.value)} />
-          <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
-          <button onClick={handleClick}>Add</button>
+          <div className="logo">Notes</div>
+          <input type="text" placeholder='Title' onChange={(e) => setTitle(e.target.value)} className='title' />
+          <input type="text" placeholder='Description' onChange={(e) => setDescription(e.target.value)} className='description' />
+          {/* <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} /> */}
+          {/* <button onClick={handleClick}>Add</button> */}
+          <div>
+            <button className="button" onClick={handleClick}>
+              Add Note
+            </button>
+          </div>
         </div>
 
-        {
-          alldata && alldata.data.map((user, i) => (
-            <>
-              <div className='user_div'>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  {
-                    user.status === true ? <BsFillCheckCircleFill style={{ color: "lightgray" }} /> : <BsCircleFill style={{ color: "lightgray" }} />
-                  }
-                  <h2 key={i} className={user.status === true ? 'linethrough' : ''}>{user.name}</h2>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {
+            alldata && alldata.data.map((user, i) => (
+              <>
+                <div className="note_main_div">
+                  {/* <div className='note_div' data-bs-toggle="modal" data-bs-target="#exampleModal"> */}
+                  <div className='note_div'>
+                    <h2 key={i} className="note_title">{user.title}</h2>
+                    <p className='note_desc'>{user.description}</p>
+                    <div className='btn_div'>
+                      <button onClick={() => handleUpdate(user._id)} className='update_btn'>Update</button>
+                      <button onClick={() => handledelete(user._id)}>Delete</button>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <MdOutlineDeleteOutline onClick={() => handledelete(user._id)} style={{ color: "lightgray", fontSize: "25px", cursor: "pointer" }} />
-                  <GrUpdate onClick={() => handleUpdate(user._id)} style={{ color: "lightgray", fontSize: "20px", cursor: "pointer" }} />
+
+                <div>
+                  {/* <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Launch demo modal
+                  </button> */}
+
+                  <div className="modal fade" tabIndex="-1" id='exampleModal'>
+                    <div className="modal-dialog">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h5 className="modal-title">{user.title}</h5>
+                          <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                          <p>{user.description}</p>
+                        </div>
+                        <div className="modal-footer">
+                          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" className="btn btn-primary">Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </>
-          ))
-        }
+              </>
+            ))
+          }
+        </div>
+
+
+
       </div>
     </>
   )

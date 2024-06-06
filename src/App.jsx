@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
+import AddNote from './addNote'
+import { LiaPenSolid } from "react-icons/lia";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 function App() {
 
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [updateForm, setUpdateForm] = useState({
+    _id: null,
+    title: '',
+    description: '',
+  })
 
   const [alldata, setAlldata] = useState('')
 
-  const URL = 'https://mern-hpk3.onrender.com';
-  // const URL = 'http://localhost:8000';
+  // const URL = 'https://mern-hpk3.onrender.com';
+  const URL = 'http://localhost:8000';
 
   useEffect(() => {
     axios.get(`${URL}/get`)
@@ -19,33 +25,38 @@ function App() {
       .catch((error) => console.log(error))
   }, [])
 
-  const handleClick = () => {
-
-    if (!title || !description) {
-      alert("Please enter the details");
-    }
-
-    axios.post(`${URL}/add`, { title, description })
-      .then(() => location.reload())
-      .catch((error) => console.log(error))
-  }
-
   const handledelete = (id) => {
     axios.delete(`${URL}/delete/` + id)
       .then(() => location.reload())
       .catch((error) => console.log(error))
   }
 
-  const handleUpdate = (id) => {
-    axios.put(`${URL}/update/` + id)
+  const handleUpdate = (user) => {
+    setUpdateForm({ title: user.title, description: user.description, _id: user._id })
+  }
+
+  const handleFieldChange = (event) => {
+    const { value, name } = event.target;
+
+    setUpdateForm({
+      ...updateForm,
+      [name]: value
+    })
+  }
+
+  const handleFieldUpdate = async () => {
+    const { title, description } = updateForm;
+
+    await axios.put(`${URL}/update/${updateForm._id}`, { title, description })
       .then(() => location.reload())
-      .catch((error) => console.log(error))
+      .catch((err) => console.log(err))
+
   }
 
   if (!alldata) {
     return (
       <>
-        <div style={{display:"flex", justifyContent:"center", alignItems:"center",minHeight:"100vh"}}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
           <div className="spinner">
             <div></div>
             <div></div>
@@ -67,66 +78,57 @@ function App() {
   return (
     <>
       <div className='main_div'>
-        <div className='input_div'>
-          <div className="logo">Notes</div>
-          <input type="text" placeholder='Title' onChange={(e) => setTitle(e.target.value)} className='title' />
-          <input type="text" placeholder='Description' onChange={(e) => setDescription(e.target.value)} className='description' />
-          {/* <input type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} /> */}
-          {/* <button onClick={handleClick}>Add</button> */}
-          <div>
-            <button className="button" onClick={handleClick}>
-              Add Note
-            </button>
-          </div>
-        </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <AddNote />
+
+        <div className='notes_outer_div'>
           {
             alldata && alldata.data.map((user, i) => (
               <>
                 <div className="note_main_div">
-                  {/* <div className='note_div' data-bs-toggle="modal" data-bs-target="#exampleModal"> */}
                   <div className='note_div'>
                     <h2 key={i} className="note_title">{user.title}</h2>
-                    <p className='note_desc'>{user.description}</p>
+                    <p className='note_desc' style={{ height:"95px",overflow:"hidden"}}>{user.description}</p>
                     <div className='btn_div'>
-                      <button onClick={() => handleUpdate(user._id)} className='update_btn'>Update</button>
-                      <button onClick={() => handledelete(user._id)}>Delete</button>
+                      {/* <button onClick={() => handleUpdate(user)} className='update_btn' data-bs-toggle="modal" data-bs-target="#exampleModal">Update</button> */}
+
+                      <div className='note_btn edit_btn'><LiaPenSolid onClick={() => handleUpdate(user)} data-bs-toggle="modal" data-bs-target="#exampleModal"/></div>
+                      <div className='note_btn delete_btn'><MdDeleteOutline onClick={() => handledelete(user._id)}/></div>
+
+                      {/* <button onClick={() => handledelete(user._id)}>Delete</button> */}
                     </div>
                   </div>
-                </div>
+                </div >
 
                 <div>
-                  {/* <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    Launch demo modal
-                  </button> */}
-
-                  <div className="modal fade" tabIndex="-1" id='exampleModal'>
+                  <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                       <div className="modal-content">
                         <div className="modal-header">
-                          <h5 className="modal-title">{user.title}</h5>
+                          <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                           <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                          <p>{user.description}</p>
-                        </div>
-                        <div className="modal-footer">
-                          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                          <button type="button" className="btn btn-primary">Save changes</button>
+                          <label htmlFor="">Title</label>
+                          <input type="text" name='title' value={updateForm.title} onChange={handleFieldChange} />
+                          <label htmlFor="">Description</label>
+                          <textarea rows={5} type="text" name='description' value={updateForm.description} onChange={handleFieldChange}></textarea>
+                          <div className="modal-footer">
+                            <button type="button" onClick={handleFieldUpdate} className="btn btn-primary" data-bs-dismiss="modal">Done</button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
+
               </>
             ))
           }
         </div>
+      </div >
 
-
-
-      </div>
     </>
   )
 }

@@ -16,8 +16,8 @@ function App() {
 
   const [alldata, setAlldata] = useState('')
 
-  // const URL = 'https://mern-hpk3.onrender.com';
-  const URL = 'http://localhost:8000';
+  const URL = 'https://mern-hpk3.onrender.com';
+  // const URL = 'http://localhost:8000';
 
   useEffect(() => {
     axios.get(`${URL}/get`)

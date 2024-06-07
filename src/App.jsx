@@ -115,9 +115,9 @@ function App() {
             alldata && alldata.data.map((user, i) => (
               <>
                 <div className="note_main_div">
-                  <div className='note_div' data-bs-toggle="modal" data-bs-target="#example" onClick={() => handleUpdate(user)}>
+                  <div className='note_div'>
                     <h2 key={i} className="note_title">{user.title}</h2>
-                    <p className='note_desc' id='user_desc' >{user.description}</p>
+                    <p className='note_desc' id='user_desc' data-bs-toggle="modal" data-bs-target="#example" onClick={() => handleUpdate(user)}>{user.description}</p>
                     <div className='btn_div'>
                       <div className='note_btn edit_btn'><LiaPenSolid onClick={() => handleUpdate(user)} data-bs-toggle="modal" data-bs-target="#exampleModal" /></div>
                       <div className='note_btn delete_btn'><MdDeleteOutline onClick={() => handledelete(user._id)} /></div>

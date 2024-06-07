@@ -7,8 +7,8 @@ const AddNote = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
-    const URL = 'http://localhost:8000';
-
+    // const URL = 'http://localhost:8000';
+    const URL = 'https://mern-hpk3.onrender.com';
     const handleClick = () => {
 
         if (!title || !description) {
